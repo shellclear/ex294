@@ -1,0 +1,48 @@
+- hosts: webservers
+  vars_files:
+    - vars/user_list.yml
+    - secret.yml
+  tasks:
+    - block:
+      - name: configure webservers users
+        user:
+          name: "{{ item.username }}"
+          shell: /bin/bash
+          password: "{{ user_password | password_hash('sha512') }}"
+          groups: wheel
+          append: yes      
+          generate_ssh_key: true
+        loop: "{{ users }}"
+      - name: Set authorized key taken from file
+        authorized_key:
+          user: "{{ item.username }}"
+          state: present
+          key: "{{ lookup('file', 'files/automation_ssh_rsa.pub') }}"
+        loop: "{{ users }}"
+      when: item.uid is match('1.*')
+      become: true
+
+- hosts: database
+  vars_files:
+    - vars/user_list.yml
+    - secret.yml
+  tasks:
+    - block:  
+      - name: configure database users
+        user:
+          name: "{{ item.username }}"
+          shell: /bin/bash
+          password: "{{ database_password | password_hash('sha512') }}"
+          groups: wheel
+          append: yes
+          generate_ssh_key: true
+        loop: "{{ users }}"
+      - name: Set authorized key taken from file
+        authorized_key:
+          user: "{{ item.username }}"
+          state: present
+          key: "{{ lookup('file', 'files/automation_ssh_rsa.pub') }}"
+        loop: "{{ users }}"
+      when: item.uid is match('2.*')
+      become: true
+      

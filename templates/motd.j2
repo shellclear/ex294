@@ -1,0 +1,8 @@
+{% if group_names[0] == 'proxy' %}
+  Welcome to HAProxy server
+{% elif group_names[0] == 'webservers' %}
+  Welcome to Apache server
+{% elif group_names[0] == 'database' %}
+  Welcome to MySQL server
+{% endif %}
+

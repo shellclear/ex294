@@ -1,0 +1,11 @@
+- name: Configure motd banner
+  hosts: all
+  tasks:
+    - name: change /etc/motd file message according by host group
+      become: yes
+      template:
+        src: templates/motd.j2
+        dest: /etc/motd
+        owner: root
+        group: root
+        mode: '0644'

@@ -1,0 +1,10 @@
+proxy:
+  hosts:
+    ansible2.hl.local:
+webservers:
+  hosts:
+    ansible3.hl.local:
+    ansible4.hl.local:
+database:
+  hosts:
+    ansible5.hl.local:
