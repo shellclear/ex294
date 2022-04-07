@@ -1,0 +1,10 @@
+- hosts: proxy
+  tasks:
+    - become: true
+      cron:
+        user: root
+        name: "record"
+        minute: "0"
+        hour: "*/1"
+        job: "date >> /var/log/time.log" 
+  
