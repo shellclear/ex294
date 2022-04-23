@@ -1,0 +1,22 @@
+- name: "Ensure mysql community repo is configured"
+  hosts: database
+  become: true
+  tasks:
+    - name: configure mysql community repo
+      yum_repository:
+        name: mysql80-community
+        description: MySQL 8.0 YUM Repo
+        baseurl: "http://repo.mysql.com/yum/mysql-8.0-community/el/8/x86_64/"
+        gpgcheck: yes    
+        enabled: yes    
+
+    - name: add mysql repo key
+      rpm_key:
+        key: "https://repo.mysql.com/RPM-GPG-KEY-mysql-2022"
+
+    - name: disable default mysql module
+      command: dnf module disable -y mysql
+      register: result
+      changed_when:
+        '"Disabling" in result.stdout or
+         "Enabling" in result.stdout'
