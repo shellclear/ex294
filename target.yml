@@ -1,0 +1,6 @@
+- name: Ensure packages
+  hosts: webservers
+  become: true
+  tasks:
+    - name: set multi-user systemd
+      shell: systemctl set-default multi-user.target
