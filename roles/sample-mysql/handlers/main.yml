@@ -1,0 +1,7 @@
+---
+# handlers file for sample-mysql
+- name: restart mysqld
+  service:
+    name: mysqld
+    state: restarted
+    enabled: true

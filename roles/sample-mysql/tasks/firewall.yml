@@ -1,0 +1,17 @@
+- name: install firewalld packets
+  yum:
+    name: "{{ firewall_packages }}"
+
+- name: ensure firewalld is running
+  service:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: configure firewall
+  firewalld:
+    service: "{{ item.service}}"
+    permanent: "{{ item.permanent }}"
+    state: "{{ item.state }}"
+    immediate: "{{ item.immediate }}"
+  loop: "{{ firewall }}"

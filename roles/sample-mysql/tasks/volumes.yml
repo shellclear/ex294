@@ -1,0 +1,47 @@
+- name: install lvm packets
+  yum: 
+    name: "{{ lvm_packages }}"
+
+- name: create disk partitions
+  parted:
+    device: "{{ item.device }}" 
+    number: "{{ item.number }}" 
+    unit: "{{ item.unit }}"
+    part_start: "{{ item.start }}"
+    part_end: "{{ item.end }}"
+    state: "{{ item.state }}"
+  loop: "{{ partition }}"  
+
+- name: create volume groups
+  lvg:
+    pvs: "{{ item.devices }}"
+    state: "{{ item.state }}"
+    vg: "{{ item.name }}"
+  loop: "{{ vol_group }}"
+
+- name: create logical volumes
+  lvol:
+    vg: "{{ item.vgroup }}"
+    lv: "{{ item.name }}"
+    size: "{{ item.lv_size }}"
+  loop: "{{ logical_vol }}"
+
+- name: create filesystem
+  filesystem:
+    fstype: "{{ item.type }}"
+    dev: "{{ item.dev }}"
+  loop: "{{ filesystem_config }}"
+
+- name: create mountpoint directory
+  file:
+    path: /mnt/mysql_backups
+    state: directory
+
+- name: mount filesystems
+  mount:
+    path: "{{ item.mountpoint }}"
+    src: "{{ item.dev }}"
+    fstype: "{{ item.type }}"
+    opts: "{{ item.opts }}"
+    state: "{{ item.mount }}"
+  loop: "{{ filesystem_config }}"

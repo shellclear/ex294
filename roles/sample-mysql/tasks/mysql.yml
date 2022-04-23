@@ -1,0 +1,46 @@
+- name: Install mysql packets
+  yum:
+    name: "{{ mysql_packages }}"
+
+- name: Ensure mysql is started and enabled
+  service:
+    name: mysqld
+    state: started
+    enabled: true
+
+- name: configure my.cnf file
+  template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+  notify: restart mysqld
+
+- name: gather inital mysql password user
+  slurp:
+    src: /var/log/mysqld.log
+  register: mysqld_log
+
+- set_fact:
+    mysql_root_passwd: "{{ mysqld_log.content | b64decode | regex_search('A temporary password is generated for root@localhost:(.*)') | regex_replace('A temporary password is generated for root@localhost: ', '') }}"
+
+- debug:
+    msg: "{{ mysql_root_passwd }}"
+
+- name: change mysql initial root password
+  shell: mysql -uroot -p{{ mysql_root_passwd | quote }} --connect-expired-password -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Querty@123';"
+
+- name: change default validation policy mysql8
+  shell: mysql -uroot -pQuerty@123 --connect-expired-password -e "SET GLOBAL validate_password.policy = 0;"
+
+- name: change mysql root password
+  shell: mysql -uroot -pQuert@123 --connect-expired-password -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ database_password | quote }}';"
+
+# - name: configure mysql user
+#   mysql_user:
+#     login_user: root
+#     login_host: localhost
+#     login_password: 'BAwu(xsk!6tx'
+#     state: present
+#     name: test
+#     password: test
+#     update_password: always
+#     encrypted: true

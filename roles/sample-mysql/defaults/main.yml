@@ -1,0 +1,47 @@
+---
+# defaults file for sample-mysql
+
+# volume.yml vars
+lvm_packages: 
+  - lvm2
+
+partition:
+  - device: /dev/vdb
+    number: 1
+    unit: MiB
+    start: 1MiB
+    end: 800MiB
+    state: present
+
+vol_group:
+  - name: vg_database
+    devices: /dev/vdb1
+    state: present
+
+logical_vol:
+  - vgroup: vg_database
+    name: lv_mysql
+    lv_size: 512M
+
+filesystem_config:
+  - type: xfs
+    mountpoint: /mnt/mysql_backups
+    opts: noatime
+    dev: /dev/vg_database/lv_mysql
+    state: present
+    mount: mounted
+
+# mysql.yml vars
+mysql_packages:
+  - python3-PyMySQL.noarch
+  - mysql-community-server
+
+# firewall.yml vars
+firewall_packages: 
+  - firewalld
+
+firewall:
+  - service: mysql
+    permanent: true
+    state: enabled
+    immediate: true
