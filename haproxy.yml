@@ -1,0 +1,38 @@
+# - import_playbook: repository.yml
+
+- name: Ensure frontend is configured
+  hosts: proxy
+  become: true
+  vars:
+    firewall_packages:
+      - firewalld
+    firewall:
+      port:
+        - 80
+  tasks:
+    - name: install firewalld packets
+      yum:
+        name: "{{ firewall_packages }}"
+
+    - name: ensure firewalld is running
+      service:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: configure firewall
+      firewalld:
+        port: "{{ item }}/tcp"
+        permanent: true
+        state: enabled
+        immediate: true
+      loop: "{{ firewall['port'] }}"
+
+    - include_role:
+        name: geerlingguy.haproxy
+      vars:
+        haproxy_backend_servers:
+        - name: app1
+          address: ansible3.hl.local:80
+        - name: app2
+          address: ansible4.hl.local:80
