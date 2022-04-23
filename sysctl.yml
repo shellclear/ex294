@@ -1,0 +1,17 @@
+- name: Ensure sysctl is configured
+  hosts: all
+  become: true
+  tasks:
+    # Set vm.swappiness to 5 in /etc/sysctl.conf
+    - sysctl:
+        name: vm.swappiness
+        value: '10'
+        state: present
+      when: ansible_memtotal_mb > 2048
+
+    # Example playbook using fail and when together
+    - fail:
+        msg: Server memory less than 2048MB
+      when: ansible_memtotal_mb < 2048
+
+      
