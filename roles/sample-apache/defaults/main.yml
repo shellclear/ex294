@@ -1,0 +1,15 @@
+---
+# defaults file for sample-a
+
+packages:
+  - httpd
+  - mod_ssl
+  - php
+
+firewall_packages:
+  - firewalld
+
+firewall:
+  port:
+    - 80
+    - 443

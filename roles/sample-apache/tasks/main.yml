@@ -1,0 +1,10 @@
+---
+# tasks file for sample-apache
+- include_tasks:
+    file: packages.yml
+
+- include_tasks:
+    file: firewall.yml
+
+- include_tasks:
+    file: apache.yml

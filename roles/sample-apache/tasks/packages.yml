@@ -1,0 +1,9 @@
+- yum:
+    name: "{{ packages }}"
+    state: present
+
+- service:
+    name: httpd
+    state: started
+    enabled: true
+

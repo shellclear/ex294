@@ -1,0 +1,7 @@
+# - import_playbook: repository.yml
+
+- name: Ensure webserver is configured
+  hosts: webservers
+  become: true
+  roles:
+    - sample-apache
