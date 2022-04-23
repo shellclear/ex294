@@ -1,0 +1,20 @@
+- name: Ensure sysctl is configured
+  hosts: database
+  become: true
+  tasks:
+    - copy:
+        content: |-
+          dev
+          test
+          qa
+          prod
+        dest: /mnt/mysql_backups/database_list.txt
+        mode: 0644
+        owner: root
+        group: root
+
+    - name: Compress directory /path/to/foo/ into /path/to/foo.tgz
+      archive:
+        path: /mnt/mysql_backups/database_list.txt
+        dest: /mnt/mysql_backups/archive.gz
+      
