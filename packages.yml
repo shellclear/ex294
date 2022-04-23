@@ -1,0 +1,22 @@
+- name: Ensure packages
+  hosts: all
+  become: true
+  vars:
+    proxy:
+      - tcpdump
+      - mailx
+    database:
+      - lsof
+      - mailx
+  tasks:
+    - name: install proxy packages
+      yum:
+        name: "{{ proxy }}"
+      when: inventory_hostname in groups['proxy']
+
+    - name: install database packages
+      yum:
+        name: "{{ proxy }}"
+      when: inventory_hostname in groups['database']
+
+      
